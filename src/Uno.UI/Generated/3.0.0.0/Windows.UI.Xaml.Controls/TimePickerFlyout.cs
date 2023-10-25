@@ -24,7 +24,7 @@ namespace Windows.UI.Xaml.Controls
 		// Forced skipping of method Windows.UI.Xaml.Controls.TimePickerFlyout.MinuteIncrement.set
 		// Forced skipping of method Windows.UI.Xaml.Controls.TimePickerFlyout.TimePicked.add
 		// Forced skipping of method Windows.UI.Xaml.Controls.TimePickerFlyout.TimePicked.remove
-#if __ANDROID__ || __IOS__ || IS_UNIT_TESTS || __WASM__ || __SKIA__ || __NETSTD_REFERENCE__ || __MACOS__
+#if false
 		[global::Uno.NotImplemented("__ANDROID__", "__IOS__", "IS_UNIT_TESTS", "__WASM__", "__SKIA__", "__NETSTD_REFERENCE__", "__MACOS__")]
 		public global::Windows.Foundation.IAsyncOperation<global::System.TimeSpan?> ShowAtAsync(global::Windows.UI.Xaml.FrameworkElement target)
 		{
@@ -34,7 +34,7 @@ namespace Windows.UI.Xaml.Controls
 		// Forced skipping of method Windows.UI.Xaml.Controls.TimePickerFlyout.ClockIdentifierProperty.get
 		// Forced skipping of method Windows.UI.Xaml.Controls.TimePickerFlyout.TimeProperty.get
 		// Forced skipping of method Windows.UI.Xaml.Controls.TimePickerFlyout.MinuteIncrementProperty.get
-#if false || false || IS_UNIT_TESTS || __WASM__ || __SKIA__ || __NETSTD_REFERENCE__ || __MACOS__
+#if false
 		[global::Uno.NotImplemented("IS_UNIT_TESTS", "__WASM__", "__SKIA__", "__NETSTD_REFERENCE__", "__MACOS__")]
 		public event global::Windows.Foundation.TypedEventHandler<global::Windows.UI.Xaml.Controls.TimePickerFlyout, global::Windows.UI.Xaml.Controls.TimePickedEventArgs> TimePicked
 		{

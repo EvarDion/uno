@@ -36,7 +36,7 @@ namespace UnoApp50
 			builder.AddProvider(new global::Uno.Extensions.Logging.WebAssembly.WebAssemblyConsoleLoggerProvider());
 #elif __IOS__ || __MACCATALYST__
 			builder.AddProvider(new global::Uno.Extensions.Logging.OSLogLoggerProvider());
-#elif NETFX_CORE
+#elif WINAPPSDK
 			builder.AddDebug();
 #else
 			builder.AddConsole();

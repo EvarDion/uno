@@ -172,7 +172,9 @@ namespace Microsoft.UI.Xaml.Tests.MUXControls.ApiTests.RepeaterTests
 			{
 				string errorMessage = string.Empty;
 				ItemsRepeater repeater = new ItemsRepeater();
+#if HAS_UNO //WinUI uses COMException here, we use InvalidOperationException instead.
 				try
+#endif
 				{
 					repeater.GetOrCreateElement(0);
 				}

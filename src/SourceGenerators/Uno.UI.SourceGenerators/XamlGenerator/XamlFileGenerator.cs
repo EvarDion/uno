@@ -4028,8 +4028,8 @@ namespace Uno.UI.SourceGenerators.XamlGenerator
 		{
 			TryAnnotateWithGeneratorSource(writer);
 			var literalValue = isCustomMarkupExtension
-					? GetCustomMarkupExtensionValue(member)
-					: BuildLiteralValue(member, propertyType: propertyType, owner: member, objectUid: objectUid);
+				? GetCustomMarkupExtensionValue(member, closureName)
+				: BuildLiteralValue(member, propertyType: propertyType, owner: member, objectUid: objectUid);
 
 			var memberGlobalizedType = FindType(member.Member.DeclaringType)?.GetFullyQualifiedTypeIncludingGlobal() ?? GetGlobalizedTypeName(member.Member.DeclaringType.Name);
 			writer.AppendLineInvariantIndented(
@@ -4698,7 +4698,7 @@ namespace Uno.UI.SourceGenerators.XamlGenerator
 				MarkupHelper = $"global::{XamlConstants.Types.MarkupHelper}",
 				IMarkupExtensionOverrides = $"global::{XamlConstants.Types.IMarkupExtensionOverrides}",
 				PvtpDeclaringType = GetGlobalizedTypeName(member.Member.DeclaringType),
-				PvtpType = GetGlobalizedTypeName(member.Member.Type),
+				PvtpType = FindPropertyType(member.Member)?.GetFullyQualifiedTypeIncludingGlobal(), // ?? "object"
 			};
 
 			// Build a string of all its properties

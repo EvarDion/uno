@@ -1,4 +1,4 @@
-﻿using Microsoft.UI.Xaml;
+﻿using Microsoft/* UWP don't rename */.UI.Xaml;
 using System;
 using Uno.UI.Runtime.Skia.Linux.FrameBuffer;
 using Windows.UI.Core;

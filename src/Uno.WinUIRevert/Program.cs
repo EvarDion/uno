@@ -115,6 +115,17 @@ namespace UnoWinUIRevert
 					, searchPattern: "*.xaml"
 				);
 			}
+
+			// Revert specifically for pathless casting test where
+			// the namespace needs to be explicitly specified for a downcast
+			// diverging from the common use of explicit "using:Microsoft.UI.Xaml"
+			// which reference MUX controls in a WUX source tree.
+			ReplaceInFolders(
+				Path.Combine(basePath, "src", "Uno.UI.Tests"),
+				new[] {
+				("using:Microsoft.UI.Xaml", "using:Windows.UI.Xaml") }
+				, searchPattern: "xBind_PathLessCasting.xaml"
+			);
 		}
 
 		static string[] _exclusions = new string[] {

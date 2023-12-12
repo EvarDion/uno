@@ -114,6 +114,12 @@ namespace UnoWinUIRevert
 					("using:Windows.UI.Xaml", "using:Microsoft.UI.Xaml") }
 					, searchPattern: "*.xaml"
 				);
+				ReplaceInFolders(
+					styleFolder,
+					new[] {
+					("using:Windows.UI.Xaml", "using:Microsoft.UI.Xaml") }
+					, searchPattern: "*.xamltest"
+				);
 			}
 
 			// Revert specifically for pathless casting test where

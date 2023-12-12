@@ -92,6 +92,7 @@ namespace UnoWinUIRevert
 
 
 			UncommentWinUISpecificBlock(Path.Combine(basePath, "build", "nuget", "Uno.WinUI.nuspec"));
+			UncommentWinUISpecificBlock(Path.Combine(basePath, "build", "nuget", "Uno.WinUI.MSAL.nuspec"));
 
 			// Replace microsoft namespaces in a reversible way
 			// This particular section assumes that UWP controls are not prefixed with `using:Windows.UI.Xaml`

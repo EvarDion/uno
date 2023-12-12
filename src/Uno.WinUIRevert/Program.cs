@@ -122,6 +122,7 @@ namespace UnoWinUIRevert
 			"SamplesApp.Windows.csproj",
 			"SamplesApp.UWP.Design.csproj",
 			@"Uno.UWPSyncGenerator",
+			@"PackageDiffIgnore.xml",
 			@"src\Uno.UWP\",
 			@"src\Uno.UI\UI\Xaml\Controls\NavigationView\",
 			@"src\Uno.UI.RuntimeTests\Tests\Windows_UI_Xaml_Controls\Given_NavigationView.cs",

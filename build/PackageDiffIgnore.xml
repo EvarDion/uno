@@ -1721,6 +1721,9 @@
 
 	<IgnoreSet baseVersion="5.0">
 		<Types>
+			<Member fullName="Windows.Gaming.UI.GameMonitor" reason="Removed from UWP" />
+			<Member fullName="Windows.ApplicationModel.IAppInfoStatics" reason="Removed from UWP" />
+			<Member fullName="Windows.Gaming.UI.GameMonitoringPermission" reason="Removed from UWP" />
 		</Types>
 
 		<Events>

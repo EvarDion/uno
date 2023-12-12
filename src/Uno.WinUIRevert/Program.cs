@@ -198,8 +198,11 @@ namespace UnoWinUIRevert
 
 		private static void UncommentWinUISpecificBlock(string nuspecPath)
 		{
-			ReplaceInFile(nuspecPath, @"<!-- BEGIN UWP-excluded -->", "<!-- WinUI Specific ");
-			ReplaceInFile(nuspecPath, @"<!-- END UWP-excluded -->", "-->");
+			ReplaceInFile(nuspecPath, @"<!-- BEGIN UWP-specific", "<!-- BEGIN UWP-specific -->");
+			ReplaceInFile(nuspecPath, @"END UWP-specific -->", "<!-- END UWP-specific -->");
+
+			ReplaceInFile(nuspecPath, @"<!-- BEGIN WinUI-specific -->", "<!-- BEGIN WinUI-specific");
+			ReplaceInFile(nuspecPath, @"<!-- END WinUI-specific -->", "END WinUI-specific -->");
 		}
 	}
 }

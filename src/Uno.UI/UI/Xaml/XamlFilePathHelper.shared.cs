@@ -14,7 +14,7 @@ namespace Uno.UI.Xaml
 		public const string AppXScheme = "ms-appx";
 		public const string MSResourceIdentifier = "ms-resource:///";
 		public static string LocalResourcePrefix => $"{MSResourceIdentifier}Files/";
-		public const string WinUICompactURL = "Microsoft/* UWP don't rename */.UI.Xaml/DensityStyles/Compact.xaml";
+		public const string WinUICompactURL = "Microsoft" + /* UWP don't rename */ ".UI.Xaml/DensityStyles/Compact.xaml";
 
 		/// <summary>
 		/// Convert relative source path to absolute path.

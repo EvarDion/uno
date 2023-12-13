@@ -1601,7 +1601,7 @@ namespace Uno.UI.SourceGenerators.XamlGenerator
 					return XamlConstants.MaxFluentResourcesVersion;
 				}
 
-				using (writer.BlockInvariant($"new global::Microsoft" + /* UWP don't rename */ ".UI.Xaml.Controls.XamlControlsResourcesV{GetResourcesVersion()}()"))
+				using (writer.BlockInvariant($"new global::Microsoft" + /* UWP don't rename */ $".UI.Xaml.Controls.XamlControlsResourcesV{GetResourcesVersion()}()"))
 				{
 					BuildLiteralProperties(writer, topLevelControl);
 				}

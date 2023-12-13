@@ -19,10 +19,12 @@ public class Given_MarkupExtension
 		var target = pvt.TargetObject;
 		var pvtp = pvt.TargetProperty as ProvideValueTargetProperty;
 
+		var expectedDP = FrameworkElement.TagProperty;
+
 		Assert.AreEqual(setup, target);
-		Assert.AreEqual(pvtp.DeclaringType, FrameworkElement.TagProperty.OwnerType);
-		Assert.AreEqual(pvtp.Name, FrameworkElement.TagProperty.Name);
-		Assert.AreEqual(pvtp.Type, FrameworkElement.TagProperty.Type);
+		Assert.AreEqual(expectedDP.OwnerType, pvtp.DeclaringType);
+		Assert.AreEqual(expectedDP.Name, pvtp.Name);
+		Assert.AreEqual(expectedDP.Type, pvtp.Type);
 	}
 
 	[TestMethod]
@@ -34,25 +36,29 @@ public class Given_MarkupExtension
 		var target = pvt.TargetObject;
 		var pvtp = pvt.TargetProperty as ProvideValueTargetProperty;
 
+		var expectedDP = Attachable.ValueProperty;
+
 		Assert.AreEqual(setup, target);
-		Assert.AreEqual(pvtp.DeclaringType, Attachable.ValueProperty.OwnerType);
-		Assert.AreEqual(pvtp.Name, Attachable.ValueProperty.Name);
-		Assert.AreEqual(pvtp.Type, Attachable.ValueProperty.Type);
+		Assert.AreEqual(expectedDP.OwnerType, pvtp.DeclaringType);
+		Assert.AreEqual(expectedDP.Name, pvtp.Name);
+		Assert.AreEqual(expectedDP.Type, pvtp.Type);
 	}
-	
+
 	[TestMethod]
 	public void When_DP_Markup_PropertyType()
 	{
 		var setup = new When_DP_Markup_Setup(); // local:Attached.Value2="{local:DebugMarkupExtension Behavior=AssignToAttachableValue}"
-		var provider =  Attachable.GetValue(setup) as IXamlServiceProvider;
+		var provider = Attachable.GetValue(setup) as IXamlServiceProvider;
 		var pvt = provider.GetService(typeof(IProvideValueTarget)) as IProvideValueTarget;
 		var target = pvt.TargetObject;
 		var pvtp = pvt.TargetProperty as ProvideValueTargetProperty;
 
+		var expectedDP = Attachable.Value2Property;
+
 		Assert.AreEqual(setup, target);
-		Assert.AreEqual(pvtp.DeclaringType, Attachable.Value2Property.OwnerType);
-		Assert.AreEqual(pvtp.Name, Attachable.Value2Property.Name);
-		Assert.AreEqual(pvtp.Type, Attachable.Value2Property.Type);
+		Assert.AreEqual(expectedDP.OwnerType, pvtp.DeclaringType);
+		Assert.AreEqual(expectedDP.Name, pvtp.Name);
+		Assert.AreEqual(expectedDP.Type, pvtp.Type);
 	}
 
 	[TestMethod]
@@ -64,9 +70,11 @@ public class Given_MarkupExtension
 		var target = pvt.TargetObject;
 		var pvtp = pvt.TargetProperty as ProvideValueTargetProperty;
 
+		var expectedDP = Attachable.ValueProperty;
+
 		Assert.AreEqual(setup, target);
-		Assert.AreEqual(pvtp.DeclaringType, typeof(Attachable));
-		Assert.AreEqual(pvtp.Name, Attachable.ValueProperty.Name);
-		Assert.AreEqual(pvtp.Type, typeof(object));
+		Assert.AreEqual(expectedDP.OwnerType, pvtp.DeclaringType);
+		Assert.AreEqual(expectedDP.Name, pvtp.Name);
+		Assert.AreEqual(expectedDP.Type, pvtp.Type);
 	}
 }

@@ -15,6 +15,7 @@ namespace Uno.Roslyn
 		private readonly Func<INamedTypeSymbol?, string, bool> _isAttachedProperty;
 		private readonly Func<INamedTypeSymbol, string, INamedTypeSymbol> _getAttachedPropertyType;
 		private readonly Func<INamedTypeSymbol, bool> _isTypeImplemented;
+		private readonly Func<INamedTypeSymbol?, string, ISymbol?>? _findPropertyByOwnerSymbol;
 		private readonly Func<INamedTypeSymbol?, string, INamedTypeSymbol?>? _findPropertyTypeByOwnerSymbol;
 		private readonly Func<INamedTypeSymbol, string[]>? _findLocalizableDeclaredProperties;
 		private readonly Func<INamedTypeSymbol?, string, IEventSymbol?>? _findEventType;
@@ -32,6 +33,7 @@ namespace Uno.Roslyn
 			_isAttachedProperty = Funcs.Create<INamedTypeSymbol?, string, bool>(SourceIsAttachedProperty).AsLockedMemoized();
 			_getAttachedPropertyType = Funcs.Create<INamedTypeSymbol, string, INamedTypeSymbol>(SourceGetAttachedPropertyType).AsLockedMemoized();
 			_isTypeImplemented = Funcs.Create<INamedTypeSymbol, bool>(SourceIsTypeImplemented).AsLockedMemoized();
+			_findPropertyByOwnerSymbol = Funcs.Create<INamedTypeSymbol?, string, ISymbol?>(SourceFindPropertyByOwnerSymbol).AsLockedMemoized();
 			_findPropertyTypeByOwnerSymbol = Funcs.Create<INamedTypeSymbol?, string, INamedTypeSymbol?>(SourceFindPropertyTypeByOwnerSymbol).AsLockedMemoized();
 			_findLocalizableDeclaredProperties = Funcs.Create<INamedTypeSymbol, string[]>(SourceFindLocalizableDeclaredProperties).AsLockedMemoized();
 			_findEventType = Funcs.Create<INamedTypeSymbol?, string, IEventSymbol?>(SourceFindEventType).AsLockedMemoized();
@@ -156,6 +158,38 @@ namespace Uno.Roslyn
 
 		private static bool SourceIsTypeImplemented(INamedTypeSymbol type)
 			=> type.GetAttributes().None(a => a.AttributeClass?.GetFullyQualifiedTypeExcludingGlobal() == XamlConstants.Types.NotImplementedAttribute);
+
+		public ISymbol? FindPropertyByOwnerSymbol(INamedTypeSymbol? type, string propertyName) => _findPropertyByOwnerSymbol!(type, propertyName);
+
+		private ISymbol? SourceFindPropertyByOwnerSymbol(INamedTypeSymbol? type, string propertyName)
+		{
+			if (type == null || string.IsNullOrEmpty(propertyName))
+			{
+				return null;
+			}
+
+			do
+			{
+				ThrowOnErrorSymbol(type);
+
+				if (type.GetPropertyWithName(propertyName) is { } property)
+				{
+					return property;
+				}
+				if (type.GetFirstMethodWithName("Set" + propertyName) is { } setter)
+				{
+					return setter;
+				}
+
+				var baseType = type.BaseType;
+				if (baseType == null || baseType.SpecialType == SpecialType.System_Object)
+				{
+					return null;
+				}
+
+				type = baseType;
+			} while (true);
+		}
 
 		public INamedTypeSymbol? FindPropertyTypeByOwnerSymbol(INamedTypeSymbol? type, string propertyName) => _findPropertyTypeByOwnerSymbol!(type, propertyName);
 

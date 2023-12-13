@@ -4681,32 +4681,56 @@ namespace Uno.UI.SourceGenerators.XamlGenerator
 		private string GetCustomMarkupExtensionValue(XamlMemberDefinition member, string? target = null)
 		{
 			// Get the type of the custom markup extension
-			var markupTypeDef = member
+			var markup = member
 				.Objects
-				.FirstOrDefault(o => IsCustomMarkupExtensionType(o.Type));
-			var markupType = GetMarkupExtensionType(markupTypeDef?.Type);
-
-			if (markupType == null || markupTypeDef == null)
+				.Select(x => new { Value = x, Symbol = GetMarkupExtensionType(x.Type) })
+				.FirstOrDefault(x => x.Symbol != null);
+			if (markup == null)
 			{
-				throw new InvalidOperationException($"Unable to find markup extension type for ");
+				throw new InvalidOperationException($"Unable to find markup extension type: '{member.Objects.FirstOrDefault()?.Type}' on '{member.Member}'");
+			}
+
+			var property = FindProperty(member.Member);
+
+			INamedTypeSymbol? declaringType = null, propertyType = null;
+			if (property is IPropertySymbol dependencyProperty)
+			{
+				declaringType = dependencyProperty.ContainingType;
+				propertyType = dependencyProperty.Type.OriginalDefinition is { SpecialType: SpecialType.System_Nullable_T }
+					? (dependencyProperty.Type as INamedTypeSymbol)?.TypeArguments[0] as INamedTypeSymbol
+					: dependencyProperty.Type as INamedTypeSymbol;
+			}
+			else if (property is IMethodSymbol { IsStatic: true, Parameters.Length: 2 } attachedPropertySetter)
+			{
+				declaringType = attachedPropertySetter.ContainingType;
+				propertyType = attachedPropertySetter.Parameters[1].Type as INamedTypeSymbol;
+			}
+
+			if (declaringType == null || propertyType == null)
+			{
+#if DEBUG
+				Console.WriteLine($"Unable to determine the target dependency property for the markup extension ('{member.Member}' cannot be found).");
+#endif
+				return string.Empty;
 			}
 
 			// Get the full globalized names
 			var globalized = new
 			{
-				MarkupType = markupType.GetFullyQualifiedTypeIncludingGlobal(),
+				MarkupType = markup.Symbol!.GetFullyQualifiedTypeIncludingGlobal(),
 				MarkupHelper = $"global::{XamlConstants.Types.MarkupHelper}",
 				IMarkupExtensionOverrides = $"global::{XamlConstants.Types.IMarkupExtensionOverrides}",
-				PvtpDeclaringType = GetGlobalizedTypeName(member.Member.DeclaringType),
-				PvtpType = FindPropertyType(member.Member)?.GetFullyQualifiedTypeIncludingGlobal(), // ?? "object"
+				XamlBindingHelper = $"global::{XamlConstants.Types.MarkupXamlBindingHelper}",
+				PvtpDeclaringType = declaringType.GetFullyQualifiedTypeIncludingGlobal(),
+				PvtpType = propertyType.GetFullyQualifiedTypeIncludingGlobal(),
 			};
 
 			// Build a string of all its properties
-			var properties = markupTypeDef
+			var properties = markup.Value
 				.Members
 				.Select(m =>
 				{
-					var propertyType = markupType.GetPropertyWithName(m.Member.Name)?.Type as INamedTypeSymbol;
+					var propertyType = markup.Symbol.GetPropertyWithName(m.Member.Name)?.Type as INamedTypeSymbol;
 					var resourceName = GetSimpleStaticResourceRetrieval(m, propertyType);
 					var value = resourceName ?? BuildLiteralValue(m, propertyType: propertyType, owner: member);
 
@@ -4727,25 +4751,13 @@ namespace Uno.UI.SourceGenerators.XamlGenerator
 			var provider = $"{globalized.MarkupHelper}.CreateParserContext({providerDetails.JoinBy(", ")})";
 
 			var provideValue = $"(({globalized.IMarkupExtensionOverrides})new {globalized.MarkupType}{markupInitializer}).ProvideValue({provider})";
-
-			// Don't use the value from MarkupExtensionReturnType to match UWP behavior.
-			if (FindPropertyType(member.Member) is INamedTypeSymbol propertyType)
+			if (IsImplementingInterface(propertyType, Generation.IConvertibleSymbol.Value))
 			{
-				var propertyTypeFullyQualified = propertyType.GetFullyQualifiedTypeIncludingGlobal();
-				if (IsImplementingInterface(propertyType, Generation.IConvertibleSymbol.Value))
-				{
-					provideValue = $"Windows.UI.Xaml.Markup.XamlBindingHelper.ConvertValue(typeof({propertyTypeFullyQualified}), {provideValue})";
-				}
+				provideValue = $"{globalized.XamlBindingHelper}.ConvertValue(typeof({globalized.PvtpType}), {provideValue})";
+			}
+			var unboxed = $"({globalized.PvtpType}){provideValue}";
 
-				return "({0}){1}".InvariantCultureFormat(propertyTypeFullyQualified, provideValue);
-			}
-			else
-			{
-#if DEBUG
-				Console.WriteLine($"Unable to determine the return type needed for the markup extension ('{member.Member}' cannot be found).");
-#endif
-				return string.Empty;
-			}
+			return unboxed;
 		}
 
 		private (bool isInside, XamlObjectDefinition? xamlObject) IsMemberInsideDataTemplate(XamlObjectDefinition? xamlObject)

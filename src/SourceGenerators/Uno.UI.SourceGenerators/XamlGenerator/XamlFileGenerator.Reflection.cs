@@ -15,7 +15,9 @@ namespace Uno.UI.SourceGenerators.XamlGenerator
 	{
 		private Func<string, INamedTypeSymbol?>? _findType;
 		private Func<XamlType, INamedTypeSymbol?>? _findTypeByXamlType;
+		private Func<XamlMember, ISymbol?>? _findPropertyByXamlMember;
 		private Func<XamlMember, INamedTypeSymbol?>? _findPropertyTypeByXamlMember;
+
 		private XClassName? _xClassName;
 		private string[]? _clrNamespaces;
 
@@ -28,6 +30,7 @@ namespace Uno.UI.SourceGenerators.XamlGenerator
 		private void InitCaches()
 		{
 			_findType = Funcs.Create<string, INamedTypeSymbol?>(SourceFindType).AsMemoized();
+			_findPropertyByXamlMember = Funcs.Create<XamlMember, ISymbol?>(SourceFindProperty).AsMemoized();
 			_findPropertyTypeByXamlMember = Funcs.Create<XamlMember, INamedTypeSymbol?>(SourceFindPropertyType).AsMemoized();
 			_findTypeByXamlType = Funcs.Create<XamlType, INamedTypeSymbol?>(SourceFindTypeByXamlType).AsMemoized();
 
@@ -276,7 +279,15 @@ namespace Uno.UI.SourceGenerators.XamlGenerator
 			return definition;
 		}
 
+		private ISymbol? FindProperty(XamlMember xamlMember) => _findPropertyByXamlMember!(xamlMember);
+
 		private INamedTypeSymbol? FindPropertyType(XamlMember xamlMember) => _findPropertyTypeByXamlMember!(xamlMember);
+
+		private ISymbol? SourceFindProperty(XamlMember xamlMember)
+		{
+			var type = FindType(xamlMember.DeclaringType);
+			return _metadataHelper.FindPropertyByOwnerSymbol(type, xamlMember.Name);
+		}
 
 		private INamedTypeSymbol? SourceFindPropertyType(XamlMember xamlMember)
 		{
